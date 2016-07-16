@@ -28,7 +28,7 @@ ARGV.each do |fn|
     elsif l =~ /Chr\tLocus/i
       # ---- Column info
       cols = l.chomp.split(/\t/)
-      # p cols
+      p cols
       inds = cols[4..-1]
       # p inds
       geno_f.write((["id"]+inds).join(",")+"\n")
@@ -37,7 +37,7 @@ ARGV.each do |fn|
       count += 1
       fields = l.chomp.split(/\t/)
       p fields
-      geno_f.write(count)
+      geno_f.write(fields[1])
       geno_f.write(","+fields[4..-1].join(","))
       geno_f.write("\n")
     end
