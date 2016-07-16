@@ -21,6 +21,9 @@ ARGV.each do |fn|
       # p cols
       inds = cols[4..-1]
       # p inds
+    else
+      fields = l.chomp.split(/t/)
+      p fields
     end
   end
 end
