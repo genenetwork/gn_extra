@@ -10,6 +10,8 @@
 
 require 'json'
 
+date = '20150722' # still hard-coded
+
 ARGV.each do |fn|
   h = {}
   inds = cols = nil
@@ -66,9 +68,15 @@ ARGV.each do |fn|
     crosstype: crosstype,
     geno: prefix+"geno.csv",
     geno_transposed: true,
+    metadata: {
+      original: { source: "GeneNetwork" },
+      geno: { unique_id: "xxx",
+              date: date },
+      gmap: { unique_id: "xxx",
+              date: date },
     genotypes_descr: {
-      maternal: 1, paternal: 2, heterozygous: 3
-    },
+      1 => "maternal", 2 => :paternal, 3 => :heterozygous
+    }},
     genotypes: {
       h["mat"] => 1,
       h["pat"] => 2,
@@ -78,6 +86,21 @@ ARGV.each do |fn|
     "na.strings": [h["unk"]],
     gmap: prefix+"gmap.csv"
   }
+  # Close files and calculated md5
+  gmap_f.close
+  geno_f.close
+  md5 = `md5sum #{geno}`.split[0]
+  md5_m = `md5sum #{gmap}`.split[0]
+  h2[:metadata][:geno][:unique_id] = md5
+  h2[:metadata][:gmap][:unique_id] = md5_m
+  # Now give geno a full name
+  md5_geno = `md5sum #{fn}`.split[0]
+  h2[:metadata][:original][:unique_id] = md5_geno
+  h2[:metadata][:original][:date] = date
+  # rename file
+  File.rename(geno, base+'_geno_'+md5+'_'+date+'.csv')
+  File.rename(gmap, base+'_gmap_'+md5_m+'_'+date+'.csv')
   gjson_f = File.open(gjson,"w")
   gjson_f.print h2.to_json
+  File.rename(fn, base+'_'+md5_geno+'_'+date+'.geno')
 end
