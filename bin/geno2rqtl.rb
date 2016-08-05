@@ -62,7 +62,7 @@ ARGV.each do |fn|
     else
       h["type"]
     end
-  prefix = "genotypes/#{h["name"]}/"
+  prefix = "#{h["name"]}/"
   h2 = {
     description: h["name"],
     crosstype: crosstype,
@@ -98,8 +98,13 @@ ARGV.each do |fn|
   h2[:metadata][:original][:unique_id] = md5_geno
   h2[:metadata][:original][:date] = date
   # rename file
-  File.rename(geno, base+'_geno_'+md5+'_'+date+'.csv')
-  File.rename(gmap, base+'_gmap_'+md5_m+'_'+date+'.csv')
+  new_geno = base+'_geno_'+md5+'_'+date+'.csv'
+  File.rename(geno, new_geno)
+  new_gmap = base+'_gmap_'+md5_m+'_'+date+'.csv'
+  File.rename(gmap, new_gmap)
+  h2[:geno] = prefix+new_geno
+  h2[:gmap] = prefix+new_gmap
+  # write json
   gjson_f = File.open(gjson,"w")
   gjson_f.print h2.to_json
   File.rename(fn, base+'_'+md5_geno+'_'+date+'.geno')
